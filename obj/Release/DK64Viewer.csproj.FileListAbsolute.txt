@@ -1,0 +1,12 @@
+F:\DKViewer_0.04a\DK64Viewer\bin\Release\DK64Viewer.exe
+F:\DKViewer_0.04a\DK64Viewer\bin\Release\DK64Viewer.pdb
+F:\DKViewer_0.04a\DK64Viewer\bin\Release\OpenTK.Compatibility.dll
+F:\DKViewer_0.04a\DK64Viewer\bin\Release\OpenTK.dll
+F:\DKViewer_0.04a\DK64Viewer\bin\Release\OpenTK.GLControl.dll
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.Form1.resources
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.Properties.Resources.resources
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.csproj.GenerateResource.cache
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.csproj.CoreCompileInputs.cache
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.csproj.CopyComplete
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.exe
+F:\DKViewer_0.04a\DK64Viewer\obj\Release\DK64Viewer.pdb
