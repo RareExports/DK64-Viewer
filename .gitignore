@@ -1,12 +1,11 @@
 # Project-specific ignores
 build/
 bin/
+Debug/
+.vs/
 DK64Viewer.7z
 *.elf
 *.sra
 *.z64
 *.n64
 *.v64
-*.map
-*.dump
-out.txt
