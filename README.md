@@ -4,8 +4,8 @@ DK64 Viewer.
 
 Source for future game modding/documentation
 
-A model/map viewer for DK64. Currently exports broken levels to base obj, and models don't load textures
-TODO: Fix these issues in future???
+A model/map viewer for DK64. ~~Currently exports broken levels to base obj, and models don't load textures
+TODO: Fix these issues in future???~~ Partially fixed
 
 Original program by [@cooliscool](https://soundcloud.com/jeremy-johnson-24) and [@Skill](https://www.romhacking.net/community/1091/).
 
