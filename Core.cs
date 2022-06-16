@@ -334,7 +334,9 @@ namespace DK64Viewer
       ref List<int> texturesGL,
       bool exportModel)
     {
-      string str1 = Program.EXPORT + file.fileAddress + "//";
+            texturesGL.Clear();
+            texturesGL.Add(-1);
+            string str1 = Program.EXPORT + file.fileAddress + "//";
       if (exportModel)
         Directory.CreateDirectory(str1);
       List<ushort> ushortList = new List<ushort>();
@@ -515,11 +517,11 @@ namespace DK64Viewer
                 ushortList.Clear();
               }
               newTexture = false;
-              texturesGL.Add(-1);
               int glTextureName = 0;
               Core.LoadNewTexture(ref textureTable, textures, ref texture, ref glTextureName, sScale, tScale, exportModel, str1);
-              texturesGL[texturesGL.Count - 1] = glTextureName;
-            }
+              //texturesGL[texturesGL.Count - 1] = glTextureName;
+              texturesGL.Add(glTextureName);
+                        }
             short index7 = (short) ((int) command1[1] / 2);
             short index8 = (short) ((int) command1[2] / 2);
             short index9 = (short) ((int) command1[3] / 2);
@@ -550,10 +552,9 @@ namespace DK64Viewer
                 ushortList.Clear();
               }
               newTexture = false;
-              texturesGL.Add(-1);
               int glTextureName = 0;
               Core.LoadNewTexture(ref textureTable, textures, ref texture, ref glTextureName, sScale, tScale, exportModel, str1);
-              texturesGL[texturesGL.Count - 1] = glTextureName;
+              texturesGL.Add(glTextureName);
             }
             short index10 = (short) ((int) command1[1] / 2);
             short index11 = (short) ((int) command1[2] / 2);
@@ -596,16 +597,27 @@ namespace DK64Viewer
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         if (!exportModel)
           return;
-        string str2 = "#Ripped by Skill" + Environment.NewLine + "mtllib dklevel.mtl" + Environment.NewLine;
-        for (int index16 = 0; index16 < vertexData.Length; index16 += 3)
-          str2 = str2 + "v " + (object) vertexData[index16] + " " + (object) vertexData[index16 + 1] + " " + (object) vertexData[index16 + 2] + Environment.NewLine;
-        for (int index17 = 0; index17 < data2.Length; index17 += 2)
-          str2 = str2 + "vt " + (object) data2[index17] + " " + (object) (float) ((double) data2[index17 + 1] * -1.0) + Environment.NewLine;
+        string str2 = "# Exported with DK64Viewer" + Environment.NewLine + "mtllib dklevel.mtl" + Environment.NewLine;
+                var in2 = 0;
+                for (int index16 = 0; index16 < vertexData.Length; index16 += 3)
+                {
+                    str2 += string.Format("v {0} {1} {2} {3} {4} {5} {6}" + Environment.NewLine,
+                                          (object)vertexData[index16],
+                                          (object)vertexData[index16 + 1],
+                                          (object)vertexData[index16 + 2],
+                                          Math.Max(0, Math.Min(255, (int)Math.Floor(data1[in2 + 0] * 256.0))),
+                                          Math.Max(0, Math.Min(255, (int)Math.Floor(data1[in2 + 1] * 256.0))),
+                                          Math.Max(0, Math.Min(255, (int)Math.Floor(data1[in2 + 2] * 256.0))),
+                                          Math.Max(0, Math.Min(255, (int)Math.Floor(data1[in2 + 3] * 256.0))));
+                    in2 += 4;
+                }
+                for (int index17 = 0; index17 < data2.Length; index17 += 2)
+          str2 = str2 + "vt " + (object) data2[index17] + " " + (object) (float) (((double) data2[index17 + 1] * -1.0)+ 1.0) + Environment.NewLine;
         for (int index18 = 0; index18 < iboHandles.Count; ++index18)
         {
           try
           {
-            if (texturesGL.Count > index18)
+            //if (texturesGL.Count > index18)
             {
               if (texturesGL[index18] == -1)
                 str2 = str2 + "usemtl none" + Environment.NewLine;
@@ -621,9 +633,9 @@ namespace DK64Viewer
         }
         string str3 = "newmtl none" + Environment.NewLine;
         List<int> intList = new List<int>();
-        for (int index20 = 0; index20 < texturesGL.Count; ++index20)
+        for (int index20 = 0; index20 < texturesGL.Count; index20++)
         {
-          if (!intList.Contains(texturesGL[index20]))
+          //if (!intList.Contains(texturesGL[index20]))
           {
             str3 = str3 + "newmtl " + (object) texturesGL[index20] + Environment.NewLine + "map_Kd " + (object) texturesGL[index20] + ".png" + Environment.NewLine;
             intList.Add(texturesGL[index20]);
@@ -730,7 +742,7 @@ namespace DK64Viewer
           Matrix4 matrix4 = num2 == (short) byte.MaxValue || (int) num2 > matrices.Count ? Matrix4.I : matrices[(int) num2];
           matrices.Add(Matrix4.GetTranslationMatrix(tx, ty, tz) * matrix4);
         }
-        for (int index6 = 0; index6 < f3Dcommands; ++index6)
+        for (int index6 = 0; index6 < f3Dcommands; index6++)
         {
           byte[] numArray4 = commands[index6];
           int num4 = (int) numArray4[4];
@@ -770,7 +782,7 @@ namespace DK64Viewer
             uint index7 = ((uint) (num12 << 8) >> 8) / 16U;
             try
             {
-              for (int index8 = (int) num15; index8 < (int) num14 + (int) num15; ++index8)
+              for (int index8 = (int) num15; index8 < (int) num14 + (int) num15; index8++)
               {
                 if ((long) index7 < (long) f3dVerts.Length)
                 {
@@ -860,7 +872,7 @@ namespace DK64Viewer
           str1 = str1 + "v " + (object) vertexData[index19] + " " + (object) vertexData[index19 + 1] + " " + (object) vertexData[index19 + 2] + Environment.NewLine;
         for (int index20 = 0; index20 < array3.Length; index20 += 2)
           str1 = str1 + "vt " + (object) array3[index20] + " " + (object) (float) ((double) array3[index20 + 1] * -1.0) + Environment.NewLine;
-        for (int index21 = 0; index21 < iboHandles.Count; ++index21)
+        for (int index21 = 0; index21 < iboHandles.Count; index21++)
         {
           try
           {
@@ -880,7 +892,7 @@ namespace DK64Viewer
         }
         string str2 = "newmtl none" + Environment.NewLine;
         List<int> intList = new List<int>();
-        for (int index23 = 0; index23 < texturesGL.Count; ++index23)
+        for (int index23 = 0; index23 < texturesGL.Count; index23++)
         {
           if (!intList.Contains(texturesGL[index23]))
           {
@@ -979,7 +991,7 @@ namespace DK64Viewer
 
     private static int GetSectionIndex(List<ModelSection> s, int n)
     {
-      for (int index = 0; index < s.Count; ++index)
+      for (int index = 0; index < s.Count; index++)
       {
         if (s[index].meshID == n)
           return index;

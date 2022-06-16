@@ -9,3 +9,5 @@ DK64Viewer.7z
 *.z64
 *.n64
 *.v64
+obj/Debug/DK64Viewer.exe
+obj/Debug/DK64Viewer.pdb

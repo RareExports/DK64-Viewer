@@ -166,10 +166,9 @@ namespace DK64Viewer
       GL.Enable(EnableCap.Texture2D);
       if (F3DEX2.textureFormat == -1)
         F3DEX2.textureFormat = (int) (byte) ((uint) command[1] >> 5);
-      F3DEX2.texelSize = (int) (byte) ((uint) (byte) ((int) command[1] >> 3 << 6) >> 6);
-      int num3 = (int) (num2 >> 9) & 15;
-      F3DEX2.lineSize = num3 == 0 ? F3DEX2.lineSize : num3;
-      F3DEX2.cmt = (int) (num1 >> 18) & 2;
+            F3DEX2.texelSize = (int)command[1] >> 3 & 3;
+            F3DEX2.lineSize = (int)((uint)num2 >> 9) & 15;
+            F3DEX2.cmt = (int) (num1 >> 18) & 2;
       F3DEX2.cms = (int) (num1 >> 8) & 3;
       if (F3DEX2.tileNo != -1)
         return;
@@ -219,7 +218,7 @@ namespace DK64Viewer
           if (F3DEX2.texelSize == 0)
           {
             GL.Enable(EnableCap.Texture2D);
-            numArray1 = F3DEX2.ConvertCI4ToRGBA8888_2(ref texture, ref pixels);
+            numArray1 = F3DEX2.CONVERT_CI4_RGBA8888(ref texture, ref pixels);
           }
           if (F3DEX2.texelSize == 2)
           {
@@ -323,91 +322,88 @@ namespace DK64Viewer
       return numArray;
     }
 
-    public static byte[] CONVERT_CI4_RGBA8888(ref Texture texture, ref byte[] textureN64Bytes)
-    {
-      int index1 = 0;
-      uint index2 = 0;
-      int textureWidth = texture.textureWidth;
-      byte[] numArray = new byte[texture.textureWidth * texture.textureHeight * 4];
-      try
-      {
-        for (int index3 = 0; index3 < texture.textureHeight; ++index3)
+        public static byte[] CONVERT_CI4_RGBA8888(ref Texture texture, ref byte[] indices)
         {
-          for (int index4 = 0; index4 < texture.textureWidth / 2; ++index4)
-          {
-            byte index5 = (byte) ((uint) textureN64Bytes[(int) index2] >> 4);
-            byte index6 = (byte) ((uint) (byte) ((uint) textureN64Bytes[(int) index2] << 4) >> 4);
-            numArray[index1] = texture.red[(int) index5];
-            numArray[index1 + 1] = texture.green[(int) index5];
-            numArray[index1 + 2] = texture.blue[(int) index5];
-            numArray[index1 + 3] = texture.alpha[(int) index5];
-            numArray[index1 + 4] = texture.red[(int) index6];
-            numArray[index1 + 5] = texture.green[(int) index6];
-            numArray[index1 + 6] = texture.blue[(int) index6];
-            numArray[index1 + 7] = texture.alpha[(int) index6];
-            index1 += 8;
-            ++index2;
-          }
-          if (F3DEX2.lineSize != 0)
-            index2 += (uint) (F3DEX2.lineSize * 8 - texture.textureWidth / 2);
-        }
-      }
-      catch (Exception ex)
-      {
-      }
-      return numArray;
-    }
-
-    public static byte[] ConvertCI4ToRGBA8888_2(ref Texture texture, ref byte[] indices)
-    {
-      int index1 = 0;
-      uint index2 = 0;
-      int textureWidth = texture.textureWidth;
-      int textureHeight = texture.textureHeight;
-      byte[] rgbA88882 = new byte[textureWidth * textureHeight * 4];
-      try
-      {
-        for (int index3 = 0; index3 < textureHeight; ++index3)
-        {
-          if (index1 + 7 < rgbA88882.Length)
-          {
-            for (int index4 = 0; index4 < F3DEX2.lineSize; ++index4)
+            int index1 = 0;
+            uint num1 = 0;
+            int textureWidth = texture.textureWidth;
+            int textureHeight = texture.textureHeight;
+            byte[] numArray = new byte[textureWidth * textureHeight * 4];
+            try
             {
-              for (int index5 = 0; index5 < textureWidth / 2 && index1 + 7 < rgbA88882.Length; ++index5)
-              {
-                byte index6 = (byte) ((uint) indices[(int) index2] >> 4);
-                byte index7 = (byte) ((uint) (byte) ((uint) indices[(int) index2] << 4) >> 4);
-                rgbA88882[index1] = texture.red[(int) index6];
-                rgbA88882[index1 + 1] = texture.green[(int) index6];
-                rgbA88882[index1 + 2] = texture.blue[(int) index6];
-                rgbA88882[index1 + 3] = texture.alpha[(int) index6];
-                rgbA88882[index1 + 4] = texture.red[(int) index7];
-                rgbA88882[index1 + 5] = texture.green[(int) index7];
-                rgbA88882[index1 + 6] = texture.blue[(int) index7];
-                rgbA88882[index1 + 7] = texture.alpha[(int) index7];
-                index1 += 8;
-                ++index2;
-              }
+                for (int index2 = 0; index2 < textureHeight; ++index2)
+                {
+                    for (int index3 = 0; index3 < textureWidth / 2; ++index3)
+                    {
+                        int num2 = (int)((uint)indices[(int)num1] >> 4);
+                        int num3 = (int)((uint)(byte)((uint)indices[(int)num1] << 4) >> 4);
+                        numArray[index1] = texture.red[(int)num2];
+                        numArray[index1 + 1] = texture.green[(int)num2];
+                        numArray[index1 + 2] = texture.blue[(int)num2];
+                        numArray[index1 + 3] = texture.alpha[(int)num2];
+                        numArray[index1 + 4] = texture.red[(int)num3];
+                        numArray[index1 + 5] = texture.green[(int)num3];
+                        numArray[index1 + 6] = texture.blue[(int)num3];
+                        numArray[index1 + 7] = texture.alpha[(int)num3];
+                        index1 += 8;
+                        ++num1;
+                    }
+                    num1 += (uint)(F3DEX2.lineSize * 8 - textureWidth / 2);
+                }
             }
-            if (index3 + 1 == textureHeight)
-              index3 = 0;
-          }
-          else
-            break;
+            catch (Exception ex)
+            {
+            }
+            return numArray;
         }
-      }
-      catch (Exception ex)
-      {
-      }
-      return rgbA88882;
-    }
 
-    public static byte[] CONVERT_CI8_RGBA8888(ref Texture texture, ref byte[] textureN64Bytes)
+        public static byte[] ConvertCI4ToRGBA8888_2(ref Texture texture, ref byte[] indices)
+        {
+            int index1 = 0;
+            uint num1 = 0;
+            int textureWidth = texture.textureWidth;
+            int textureHeight = texture.textureHeight;
+            byte[] numArray = new byte[textureWidth * textureHeight * 4];
+            try
+            {
+                for (int index2 = 0; index2 < textureHeight; ++index2)
+                {
+                    if (index1 + 7 < numArray.Length)
+                    {
+                        for (int index3 = 0; index3 < textureWidth / 2 && index1 + 7 < numArray.Length; ++index3)
+                        {
+                            byte num2 = (byte)((uint)indices[(int)num1] >> 4);
+                            byte num3 = (byte)((uint)(byte)((uint)indices[(int)num1] << 4) >> 4);
+                            numArray[index1] = texture.red[(int)num2];
+                            numArray[index1 + 1] = texture.green[(int)num2];
+                            numArray[index1 + 2] = texture.blue[(int)num2];
+                            numArray[index1 + 3] = texture.alpha[(int)num2];
+                            numArray[index1 + 4] = texture.red[(int)num3];
+                            numArray[index1 + 5] = texture.green[(int)num3];
+                            numArray[index1 + 6] = texture.blue[(int)num3];
+                            numArray[index1 + 7] = texture.alpha[(int)num3];
+                            index1 += 8;
+                            ++num1;
+                        }
+                        if (index2 + 1 == textureHeight)
+                            index2 = 0;
+                    }
+                    else
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return numArray;
+        }
+
+        public static byte[] CONVERT_CI8_RGBA8888(ref Texture texture, ref byte[] textureN64Bytes)
     {
       int index1 = 0;
       uint index2 = 0;
-      texture.textureHeight = textureN64Bytes.Length / texture.textureWidth;
-      byte[] numArray = new byte[texture.textureWidth * texture.textureHeight * 4];
+            texture.textureHeight = (textureN64Bytes.Length - 1) / texture.textureWidth;
+            byte[] numArray = new byte[texture.textureWidth * texture.textureHeight * 4];
       try
       {
         for (int index3 = 0; index3 < texture.textureHeight; ++index3)
@@ -418,7 +414,7 @@ namespace DK64Viewer
             numArray[index1 + 1] = texture.green[(int) textureN64Bytes[(int) index2]];
             numArray[index1 + 2] = texture.blue[(int) textureN64Bytes[(int) index2]];
             numArray[index1 + 3] = texture.alpha[(int) textureN64Bytes[(int) index2]];
-            index1 += 4;
+            index1 += 2;
             ++index2;
           }
           if (F3DEX2.lineSize != 0)
