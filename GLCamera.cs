@@ -15,7 +15,7 @@ namespace DK64Viewer
     private Vector3 up = new Vector3(0.0f, 1f, 0.0f);
     private Matrix4 ryMatrix = Matrix4.I;
     private Matrix4 rxMatrix = Matrix4.I;
-    public float movementSpeed = 10f;
+    public float movementSpeed = 100f;
 
     public Vector3 Position => this.position;
 

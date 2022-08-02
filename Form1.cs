@@ -325,9 +325,9 @@ namespace DK64Viewer
 
     private void openRomToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (this.openFileDialog1.ShowDialog() != DialogResult.OK)
-        return;
-      RomHandler.Rom = File.ReadAllBytes(this.openFileDialog1.FileName);
+      // if (this.openFileDialog1.ShowDialog() != DialogResult.OK)
+      //   return;
+      // RomHandler.Rom = File.ReadAllBytes(this.openFileDialog1.FileName);
       this.dgv_files.Rows.Clear();
       this.dgv_files.Columns.Clear();
       DataGridViewColumnCollection columns1 = this.dgv_files.Columns;
@@ -406,6 +406,11 @@ namespace DK64Viewer
       this.Refresh();
       Core.SetView(((Control) this.DKOpenGLC).Height, ((Control) this.DKOpenGLC).Width);
       this.Draw();
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      openRomToolStripMenuItem_Click(sender, e);
     }
 
     protected override void Dispose(bool disposing)
@@ -530,7 +535,7 @@ namespace DK64Viewer
       this.tb_speedBar.Size = new Size(150, 20);
       this.tb_speedBar.TabIndex = 9;
       this.tb_speedBar.TickFrequency = 5;
-      this.tb_speedBar.Value = 5;
+      this.tb_speedBar.Value = 50;
       this.tb_speedBar.ValueChanged += new EventHandler(this.tb_speedBar_ValueChanged);
       this.label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       this.label3.AutoSize = true;
@@ -664,6 +669,7 @@ namespace DK64Viewer
       this.Name = nameof (Form1);
       this.ShowIcon = false;
       this.Text = "DK64 Viewer";
+      this.Load += new System.EventHandler(this.Form1_Load);
       this.SizeChanged += new EventHandler(this.Form1_ResizeEnd);
       this.MouseMove += new MouseEventHandler(this.Form1_MouseMove);
       this.menuStrip1.ResumeLayout(false);

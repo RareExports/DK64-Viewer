@@ -671,8 +671,6 @@ namespace DK64Viewer
       string path = Program.EXPORT + file.fileAddress + "//";
       if (exportModel)
         Directory.CreateDirectory(path);
-      mtxBuffer.Clear();
-      matrices.Clear();
       List<ushort> ushortList = new List<ushort>();
       ushort[] numArray1 = new ushort[32];
       List<ModelSectionGroup> modelSectionGroupList = new List<ModelSectionGroup>();
@@ -835,8 +833,9 @@ namespace DK64Viewer
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         iboHandles.Add(buffers1);
         iboData.Add(array1);
-        source.Add(num1);
         ushortList.Clear();
+        GL.GenBuffers(1, out vboTexCoordHandle);
+        source.Add(num1);
         vertexData = new float[vector3List.Count * 3];
         int index18 = 0;
         foreach (Vector3 vector3 in vector3List)
@@ -894,7 +893,7 @@ namespace DK64Viewer
         List<int> intList = new List<int>();
         for (int index23 = 0; index23 < texturesGL.Count; index23++)
         {
-          if (!intList.Contains(texturesGL[index23]))
+          // if (!intList.Contains(texturesGL[index23]))
           {
             str2 = str2 + "newmtl " + (object) texturesGL[index23] + Environment.NewLine + "map_Kd " + (object) texturesGL[index23] + ".png" + Environment.NewLine;
             intList.Add(texturesGL[index23]);

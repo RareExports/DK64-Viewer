@@ -322,21 +322,91 @@ namespace DK64Viewer
       return numArray;
     }
 
-        public static byte[] CONVERT_CI4_RGBA8888(ref Texture texture, ref byte[] indices)
+    private static void ci4_helper(ref Texture texture, ref byte[] ret, ref int loff, int roff)
+    {
+      ret[loff + 0] = texture.red[roff];
+      ret[loff + 1] = texture.green[roff];
+      ret[loff + 2] = texture.blue[roff];
+      ret[loff + 3] = texture.alpha[roff];
+      loff += 4;
+    }
+
+    private static int ci4_lbyte(ref byte[] bval, int offset) { return ((byte)bval[offset] >> 4); }
+    private static int ci4_rbyte(ref byte[] bval, int offset) { return ((byte)((byte)bval[offset] << 4) >> 4); }
+
+    public static byte[] CONVERT_CI4_RGBA8888(ref Texture texture, ref byte[] indices)
+    {
+      int w = texture.textureWidth;
+      int h = texture.textureHeight;
+
+      byte[] ret = new byte[w * h * 4];
+
+      int lVal = 0;
+      int rValLen = (w / 2) * h;
+
+      try
+      {
+        if (w == h)
         {
-            int index1 = 0;
-            uint num1 = 0;
-            int textureWidth = texture.textureWidth;
-            int textureHeight = texture.textureHeight;
-            byte[] numArray = new byte[textureWidth * textureHeight * 4];
-            try
+          // Fix for non-squared textures
+          for (int rVal = 0; rVal < rValLen; rVal++)
+          {
+            lVal = rVal * 8;
+            ci4_helper(ref texture, ref ret, ref lVal, ci4_lbyte(ref indices, rVal));
+            ci4_helper(ref texture, ref ret, ref lVal, ci4_rbyte(ref indices, rVal));
+            }
+          }
+        else
+        {
+          // Fix for non-squared textures
+          for (int rVal = 0; rVal < rValLen; rVal++)
+          {
+            int lineNum = (rVal * 2) / w;
+            int lineOffset = ((rVal * 2) % w) * 2;
+            lVal = rVal * 8;
+
+            // Weave even lines (correctly set in order)
+            if (lineNum % 2 == 0) { /* lVal already set correctly */ }
+
+            // Weave odd lines (every 16 pixels needs 8 pixel group swapped left/right pair)
+            else
             {
-                for (int index2 = 0; index2 < textureHeight; ++index2)
+              if ((lineOffset / 16) % 2 == 0) // Is the right half
+                lVal += 32;
+
+              else // ((lineOffset / 8) % 2 == 1) Is the left half
+                lVal -= 32;
+            }
+
+            ci4_helper(ref texture, ref ret, ref lVal, ci4_lbyte(ref indices, rVal));
+            ci4_helper(ref texture, ref ret, ref lVal, ci4_rbyte(ref indices, rVal));
+          }
+        }
+      }
+      catch (Exception e)
+      {
+      }
+
+      return ret;
+    }
+
+    public static byte[] ConvertCI4ToRGBA8888_2(ref Texture texture, ref byte[] indices)
+    {
+        int index1 = 0;
+        uint num1 = 0;
+        int textureWidth = texture.textureWidth;
+        int textureHeight = texture.textureHeight;
+        byte[] numArray = new byte[textureWidth * textureHeight * 4];
+        try
+        {
+            for (int index2 = 0; index2 < textureHeight; ++index2)
+            {
+                if (index1 + 7 < numArray.Length)
                 {
-                    for (int index3 = 0; index3 < textureWidth / 2; ++index3)
+                    for (int index3 = 0; index3 < textureWidth / 2 && index1 + 7 < numArray.Length; ++index3)
                     {
-                        int num2 = (int)((uint)indices[(int)num1] >> 4);
-                        int num3 = (int)((uint)(byte)((uint)indices[(int)num1] << 4) >> 4);
+                        byte num2 = (byte)((uint)indices[(int)num1] >> 4);
+                        byte num3 = (byte)((uint)(byte)((uint)indices[(int)num1] << 4) >> 4);
                         numArray[index1] = texture.red[(int)num2];
                         numArray[index1 + 1] = texture.green[(int)num2];
                         numArray[index1 + 2] = texture.blue[(int)num2];
@@ -348,57 +418,20 @@ namespace DK64Viewer
                         index1 += 8;
                         ++num1;
                     }
-                    num1 += (uint)(F3DEX2.lineSize * 8 - textureWidth / 2);
+                    if (index2 + 1 == textureHeight)
+                        index2 = 0;
                 }
+                else
+                    break;
             }
-            catch (Exception ex)
-            {
-            }
-            return numArray;
         }
-
-        public static byte[] ConvertCI4ToRGBA8888_2(ref Texture texture, ref byte[] indices)
+        catch (Exception ex)
         {
-            int index1 = 0;
-            uint num1 = 0;
-            int textureWidth = texture.textureWidth;
-            int textureHeight = texture.textureHeight;
-            byte[] numArray = new byte[textureWidth * textureHeight * 4];
-            try
-            {
-                for (int index2 = 0; index2 < textureHeight; ++index2)
-                {
-                    if (index1 + 7 < numArray.Length)
-                    {
-                        for (int index3 = 0; index3 < textureWidth / 2 && index1 + 7 < numArray.Length; ++index3)
-                        {
-                            byte num2 = (byte)((uint)indices[(int)num1] >> 4);
-                            byte num3 = (byte)((uint)(byte)((uint)indices[(int)num1] << 4) >> 4);
-                            numArray[index1] = texture.red[(int)num2];
-                            numArray[index1 + 1] = texture.green[(int)num2];
-                            numArray[index1 + 2] = texture.blue[(int)num2];
-                            numArray[index1 + 3] = texture.alpha[(int)num2];
-                            numArray[index1 + 4] = texture.red[(int)num3];
-                            numArray[index1 + 5] = texture.green[(int)num3];
-                            numArray[index1 + 6] = texture.blue[(int)num3];
-                            numArray[index1 + 7] = texture.alpha[(int)num3];
-                            index1 += 8;
-                            ++num1;
-                        }
-                        if (index2 + 1 == textureHeight)
-                            index2 = 0;
-                    }
-                    else
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-            return numArray;
         }
+        return numArray;
+    }
 
-        public static byte[] CONVERT_CI8_RGBA8888(ref Texture texture, ref byte[] textureN64Bytes)
+    public static byte[] CONVERT_CI8_RGBA8888(ref Texture texture, ref byte[] textureN64Bytes)
     {
       int index1 = 0;
       uint index2 = 0;
